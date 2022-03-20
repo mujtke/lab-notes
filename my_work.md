@@ -173,3 +173,109 @@ private boolean enableThreadOperationsInstrumentation = false;
 
 
 
+## 3.10
+
+==plan_B_v0==
+
+修改了`CEGARAlgorithm`中的逻辑，每次计算出后新的后继状态之后，就判断一下是否存在Unsafe
+
+还没有添加全局的list用于存放访问信息，新添加的`haveUnsafeOrNot`与之前的`refinementNecessary`作用类似，利用reached中的信息判断是否存在可能的race
+
+提取Usage变更为串行方式，先仿照`ConcurrentUsageExtractor`，修改得到可以用于串行提取Usage的`UsageExtractor`
+
+
+
+## 3.11
+
+==plan_B_v0==
+
+* `UsageProcessor`中，改变原来利用child节点获取Usage信息的方式，==利用当前节点与父节点之间的边来获取Usage==，将`getUsagesForState`方法改写为`getUsagesForStateByParentState`方法
+* `UsageContainer`中，改写了检查container中是否存在Unsafe的逻辑，将`hasUnsafes`方法改写为`hasUnsafesForUsageContainer`，修改了运行逻辑
+
+能够检测出thread_test14.c中的不安全
+
+==refine的过程存在异常==
+
+### refine的修改
+
+==利用refine的过程来初步检查race的可行性==
+
+==如果不进行细化，会存在漏报的问题==
+
+
+
+==plan_B_v1==
+
+在==plan_B_v0==的基础上，如果可达图探索完毕之后，没有真实的race，但是存在虚假反例，则进行细化
+
+
+
+## 3.14
+
+实现细化的思路：
+
+* 在`UsageReachedSet`中添加变量`newPrecisionFound`用来标记是否有新的谓词产生
+* 当可达图探索完成(`!reach.hasWaitingState()`)，且有谓词产生时，从头开始重新计算
+* 为清空之前的可达集合，在`CEGARAlgorithm`中添加了`restart`方法
+  * 将`processedUnsafes`、`finalPrecision`以及`precisionMap`等变量添加到`UsageReachedSet`中
+
+* 在`restart`中，清理可达集合，添加initialState以及对应的精度
+
+==bug==
+
+细化之后产生的精度没有得到应用？或者说精度一直为空
+
+每次产生的可达图都一样，会不断地循环下去
+
+
+
+## 3.15
+
+在`PredicateRefinerAdapter`中添加获取全局精度的方法`GetNewPrecisionGlobal`
+
+改用全局谓词之后可达图的探索发生了变化，但是thread_test07的结果依然为*TRUE*
+
+
+
+## 3.16
+
+==**Plan_B_v1**==
+
+在`ARGPathRestorator`中：
+
+* 将`computePath`中`checkRepeatitionOfState`的内容注释掉
+
+* 在`nextPath`中跳过`computeOnePath`的判断
+
+(`nextPath`方法用于在`PathPairIterator`中计算路径)
+
+==thread_test07==的测试结果为*FALSE*
+
+*推测：之前误报的原因应该是在细化的迭代过程中，**后续迭代中没有计算出相应的路径***
+
+==使用全局谓词和局部谓词都能得到相同的结果==，但***使用局部谓词覆盖关系更多***
+
+###### **CEGAR-time初步对比**
+
+|                    | thread_test07 | ~Unsafes/u__linux-concurrency_safety__drivers---net---caif---caif_serial.ko.cil.i~ | ~Unsafes/u__linux-concurrency_safety__drivers---net---can---slcan.ko.cil.i~ |
+| :----------------: | :-----------: | :----------------------------------------------------------: | :----------------------------------------------------------: |
+| ***lockator-lab*** |    0.525s     |         局部谓词：==*TRUE(漏报)*==  全局谓词：2.737s         |                       全局谓词：9.592s                       |
+|    ***combat***    |    3.364s     |                            8.646s                            |                         700+(未结束)                         |
+
+
+
+## 3.17
+
+==benchmark初步测试对比==
+
+![3.17benchmark测试对比](https://raw.githubusercontent.com/mujtke/pics/main/Screenshot%20from%202022-03-18%2011-53-38.png)
+
+![CPU时间对比图](https://raw.githubusercontent.com/mujtke/pics/main/Screenshot%20from%202022-03-18%2017-41-17.png)
+
+## 3.18
+
+在配置文件[llws_withoutBAM_07_forLabs.properties](/home/mujueke/Documents/Cpachecker/lockator-lab/config/MyConfigure/both)中关闭输出选项之后，benchmark测是的结果如下：
+
+![03.18数据对比图](https://raw.githubusercontent.com/mujtke/pics/main/Screenshot%20from%202022-03-18%2017-42-35.png)
+
+![03.18CPU时间对比](https://raw.githubusercontent.com/mujtke/pics/main/Screenshot%20from%202022-03-18%2017-44-13.png)
