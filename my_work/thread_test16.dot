@@ -1,0 +1,35 @@
+digraph thread_test16 {
+	node [shape=box]
+	s0 -> s1 [label="int b=0, c=3;", color="black"];
+	s1 -> s2 [label=a, color="red"];
+	s2 -> s3 [label=A, labelangle=-45, color="green"];
+	s3 -> s4 [label=b, labelangle=-45, color="red"];
+	s4 -> s5 [label=B, labelangle=45, color="green"];
+	s3 -> s6 [label=B, labelangle=45, color="green"];
+	s6 -> s7 [label=b, labelangle=-45, color="red"];
+	s1 -> s8 [label=A, labelangle=45, color="green"];
+	s8 -> s9 [label=a, labelangle=-45, color="red"];
+	s9 -> s10 [label=b, labelangle=-45, color="red"];
+	s10 -> s11 [label=B, labelangle=45, color="green"];
+	s9 -> s12 [label=B, labelangle=45, color="green"];
+	s12 -> s13 [label=b, labelangle=-45, color="red"];
+	s8 -> s14 [label=B, labelangle=45, color="green"];
+	s14 -> s15 [label=a, labelangle=-45, color="red"];
+	s15 -> s16 [label=b, labelangle=-45, color="red"];
+	s1 [label=<s1<BR/><FONT COLOR="red">[L1,L3]</FONT>>];
+	s2 [label=<s2<BR/><FONT COLOR="red">[L2,L3]</FONT>>];
+	s3 [label=<s3<BR/><FONT COLOR="red">[L2,L4]</FONT>>];
+	s4 [label=<s4<BR/><FONT COLOR="red">[L5,L5]</FONT>>];
+	s5 [label=<s5<BR/><FONT COLOR="red">[L5,L5]</FONT>>];
+	s6 [label=<s6<BR/><FONT COLOR="red">[L2,L5]</FONT>>];
+	s7 [label=<s7<BR/><FONT COLOR="red">[L5,L5]</FONT>>];
+	s8 [label=<s8<BR/><FONT COLOR="red">[L1,L4]</FONT>>];
+	s9 [label=<s9<BR/><FONT COLOR="red">[L2,L4]</FONT>>];
+	s10 [label=<s11<BR/><FONT COLOR="red">[L5,L4]</FONT>>];
+	s11 [label=<s12<BR/><FONT COLOR="red">[L5,L5]</FONT>>];
+	s12 [label=<s13<BR/><FONT COLOR="red">[L2,L5]</FONT>>];
+	s13 [label=<s14<BR/><FONT COLOR="red">[L5,L5]</FONT>>];
+	s14 [label=<s15<BR/><FONT COLOR="red">[L1,L5]</FONT>>];
+	s15 [label=<s16<BR/><FONT COLOR="red">[L2,L5]</FONT>>];
+	s16 [label=<s17<BR/><FONT COLOR="red">[L5,L5]</FONT>>];
+}

@@ -279,3 +279,76 @@ private boolean enableThreadOperationsInstrumentation = false;
 ![03.18数据对比图](https://raw.githubusercontent.com/mujtke/pics/main/Screenshot%20from%202022-03-18%2017-42-35.png)
 
 ![03.18CPU时间对比](https://raw.githubusercontent.com/mujtke/pics/main/Screenshot%20from%202022-03-18%2017-44-13.png)
+
+
+
+## 3.22
+
+lockator-lab中，每次清空可达集合，从头开始的时候，打印一下获取到的usage信息。以Unsafes中的`u__linux-concurrency_safety__drivers---net---ethernet---marvell---pxa168_eth.ko.cil.i`（==误报的一个例子==）为例，首次清空可达集时获取的usage信息（打印的主要是topUsage）如下：
+
+```txt
+(?.dev)|---> 	
+	READ:[ldv_thread_12:{ldv_thread_12=CREATED_THREAD, ldv_thread_14=PARENT_THREAD, ldv_thread_15=PARENT_THREAD, ldv_thread_16=PARENT_THREAD}, []]
+	READ:[ldv_thread_16:{ldv_thread_12=CREATED_THREAD, ldv_thread_14=PARENT_THREAD, ldv_thread_16=CREATED_THREAD}, []]
+	READ:[ldv_thread_16:{ldv_thread_12=CREATED_THREAD, ldv_thread_14=PARENT_THREAD, ldv_thread_16=CREATED_THREAD}, [spin_lock]]
+```
+
+第二次清空可达集时，usage信息：
+
+```txt
+(?.dev)|---> 	
+	WRITE:[ldv_thread_12:{ldv_thread_12=CREATED_THREAD}, []]
+	READ:[ldv_thread_12:{ldv_thread_12=CREATED_THREAD, ldv_thread_14=PARENT_THREAD, ldv_thread_16=PARENT_THREAD}, []]
+	READ:[ldv_thread_16:{ldv_thread_12=CREATED_THREAD, ldv_thread_14=PARENT_THREAD, ldv_thread_16=CREATED_THREAD}, []]
+	READ:[ldv_thread_16:{ldv_thread_12=CREATED_THREAD, ldv_thread_14=PARENT_THREAD, ldv_thread_16=CREATED_THREAD}, [spin_lock]]
+```
+
+
+
+## 3.28
+
+```c
+/**
+ * 加锁，测试同步之后线程交替对与条件分支的影响
+ */ 
+#include<pthread.h>
+
+int b = 0, c = 3;
+
+pthread_t t1, t2;
+pthread_mutex_t l1;
+
+void *thread1(void *arg) {
+	int a = 0;
+	
+	pthread_mutex_lock(&l1);
+	if (c == 4) {
+		pthread_mutex_unlock(&l1);
+		b = 7;   // 竞争点1
+	}
+}
+
+void *thread2(void *arg) {
+	pthread_mutex_lock(&l1);
+	c++;
+	pthread_mutex_unlock(&l1);
+	b = 8;		// 竞争点2
+}
+
+void main() {
+
+	pthread_create(&t2, NULL, thread2, NULL);
+
+	pthread_create(&t1, NULL, thread1, NULL);
+
+	return;
+}
+```
+
+Plan_B_v1对与该竞争报*TRUE*，即**$ \color{red}{误报}$**
+
+lockator的结果也为误报
+
+初度推断原因：==没有考虑线程交替的影响，直接将线程创建视作函数调用的话有问题==
+
+==尝试使用ThreadingCPA==
