@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>JAVA</ID>
+  <OriginalElement>org.sosy_lab.cpachecker.cfa.model.CFANode</OriginalElement>
+  <nodes>
+    <node x="0.0" y="162.0">org.sosy_lab.cpachecker.cfa.model.c.CFunctionEntryNode</node>
+    <node x="403.75" y="0.0">org.sosy_lab.cpachecker.cfa.model.CFANode</node>
+    <node x="499.0" y="81.0">org.sosy_lab.cpachecker.cfa.model.c.CLabelNode</node>
+    <node x="6.0" y="81.0">org.sosy_lab.cpachecker.cfa.model.FunctionEntryNode</node>
+    <node x="244.0" y="81.0">org.sosy_lab.cpachecker.cfa.model.CFATerminationNode</node>
+    <node x="673.0" y="81.0">org.sosy_lab.cpachecker.cfa.model.FunctionExitNode</node>
+  </nodes>
+  <notes />
+  <edges>
+    <edge source="org.sosy_lab.cpachecker.cfa.model.FunctionEntryNode" target="org.sosy_lab.cpachecker.cfa.model.CFANode" relationship="GENERALIZATION">
+      <point x="0.0" y="-15.5" />
+      <point x="115.0" y="56.0" />
+      <point x="468.75" y="56.0" />
+      <point x="0.0" y="15.5" />
+    </edge>
+    <edge source="org.sosy_lab.cpachecker.cfa.model.c.CLabelNode" target="org.sosy_lab.cpachecker.cfa.model.CFANode" relationship="GENERALIZATION">
+      <point x="0.0" y="-15.5" />
+      <point x="576.0" y="56.0" />
+      <point x="468.75" y="56.0" />
+      <point x="0.0" y="15.5" />
+    </edge>
+    <edge source="org.sosy_lab.cpachecker.cfa.model.CFATerminationNode" target="org.sosy_lab.cpachecker.cfa.model.CFANode" relationship="GENERALIZATION">
+      <point x="0.0" y="-15.5" />
+      <point x="361.5" y="56.0" />
+      <point x="468.75" y="56.0" />
+      <point x="0.0" y="15.5" />
+    </edge>
+    <edge source="org.sosy_lab.cpachecker.cfa.model.c.CFunctionEntryNode" target="org.sosy_lab.cpachecker.cfa.model.FunctionEntryNode" relationship="GENERALIZATION">
+      <point x="0.0" y="-15.5" />
+      <point x="0.0" y="15.5" />
+    </edge>
+    <edge source="org.sosy_lab.cpachecker.cfa.model.FunctionExitNode" target="org.sosy_lab.cpachecker.cfa.model.CFANode" relationship="GENERALIZATION">
+      <point x="0.0" y="-15.5" />
+      <point x="776.0" y="56.0" />
+      <point x="468.75" y="56.0" />
+      <point x="0.0" y="15.5" />
+    </edge>
+  </edges>
+  <settings layout="Hierarchic" zoom="1.0" showDependencies="false" x="439.5" y="96.5" />
+  <SelectedNodes />
+  <Categories />
+  <SCOPE>All</SCOPE>
+  <VISIBILITY>private</VISIBILITY>
+</Diagram>
+
